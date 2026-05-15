@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { getArticleBySlug, getArticles } from "@/lib/strapi";
 import { notFound } from "next/navigation";
 import { ArticleDetail } from "./article-detail";

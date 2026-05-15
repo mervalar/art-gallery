@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { getArticles } from "@/lib/strapi";
 import { articleCategories } from "@/lib/data";
 import { MagazineClient } from "./magazine-client";

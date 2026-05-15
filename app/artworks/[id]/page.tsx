@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { getArtwork, getArtworks } from "@/lib/strapi";
 import { notFound } from "next/navigation";
 import { ArtworkDetail } from "./artwork-detail";

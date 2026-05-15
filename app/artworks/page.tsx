@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { getArtworks } from "@/lib/strapi";
 import { categories } from "@/lib/data";
 import { ArtworksClient } from "./artworks-client";
