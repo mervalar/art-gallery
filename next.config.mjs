@@ -6,7 +6,7 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  serverExternalPackages: ["pg", "@prisma/adapter-pg", "@prisma/client"],
+  serverExternalPackages: ["@neondatabase/serverless", "@prisma/adapter-neon", "@prisma/client"],
 }
 
 export default nextConfig
