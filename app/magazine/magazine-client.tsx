@@ -9,36 +9,42 @@ import { format } from "date-fns";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { WhatsAppButton } from "@/components/whatsapp-button";
-import { type StrapiArticle, getImageUrl } from "@/lib/strapi";
+
+type Article = {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  category: string;
+  readTime: string | null;
+  date: Date | string;
+  image: string | null;
+  author: string | null;
+  authorImage: string | null;
+  featured: boolean;
+};
 
 const containerVariants = {
   hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.08 },
-  },
+  visible: { opacity: 1, transition: { staggerChildren: 0.08 } },
 };
 
 const itemVariants = {
   hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, ease: "easeOut" },
-  },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } } as const,
 };
 
-function formatDate(date: string | null | undefined): string {
+function formatDate(date: Date | string | null | undefined): string {
   if (!date) return "";
   try {
     return format(new Date(date), "MMM d, yyyy");
   } catch {
-    return date;
+    return String(date);
   }
 }
 
 type Props = {
-  articles: StrapiArticle[];
+  articles: Article[];
   articleCategories: string[];
 };
 
@@ -47,11 +53,10 @@ export function MagazineClient({ articles, articleCategories }: Props) {
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredArticles = articles.filter((article) => {
-    const matchesCategory =
-      selectedCategory === "All" || article.category === selectedCategory;
+    const matchesCategory = selectedCategory === "All" || article.category === selectedCategory;
     const matchesSearch =
       article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      article.excerpt.toLowerCase().includes(searchQuery.toLowerCase());
+      (article.excerpt ?? "").toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
@@ -71,16 +76,11 @@ export function MagazineClient({ articles, articleCategories }: Props) {
             transition={{ duration: 0.6 }}
             className="text-center max-w-3xl mx-auto"
           >
-            <span className="text-xs tracking-[0.3em] uppercase text-accent mb-4 block">
-              Editorial
-            </span>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif mb-6">
-              The Magazine
-            </h1>
+            <span className="text-xs tracking-[0.3em] uppercase text-accent mb-4 block">Editorial</span>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif mb-6">The Magazine</h1>
             <p className="text-muted-foreground leading-relaxed">
-              Dive deep into the world of contemporary art with thoughtful
-              essays, artist interviews, exhibition previews, and cultural
-              commentary from our editorial team.
+              Dive deep into the world of contemporary art with thoughtful essays, artist interviews,
+              exhibition previews, and cultural commentary from our editorial team.
             </p>
           </motion.div>
         </div>
@@ -90,7 +90,6 @@ export function MagazineClient({ articles, articleCategories }: Props) {
       <section className="px-6 lg:px-12 mb-12">
         <div className="container mx-auto">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-            {/* Search */}
             <div className="relative max-w-md w-full">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
               <input
@@ -110,7 +109,6 @@ export function MagazineClient({ articles, articleCategories }: Props) {
               )}
             </div>
 
-            {/* Category Filters */}
             <div className="flex flex-wrap gap-3">
               {articleCategories.map((category, index) => (
                 <motion.button
@@ -131,13 +129,8 @@ export function MagazineClient({ articles, articleCategories }: Props) {
             </div>
           </div>
 
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-muted-foreground mt-6"
-          >
-            Showing {filteredArticles.length} article
-            {filteredArticles.length !== 1 ? "s" : ""}
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-muted-foreground mt-6">
+            Showing {filteredArticles.length} article{filteredArticles.length !== 1 ? "s" : ""}
           </motion.p>
         </div>
       </section>
@@ -146,18 +139,14 @@ export function MagazineClient({ articles, articleCategories }: Props) {
       {featuredArticle && (
         <section className="px-6 lg:px-12 mb-16">
           <div className="container mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
+            <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
               <Link href={`/magazine/${featuredArticle.slug}`}>
                 <article className="group relative overflow-hidden rounded-xl bg-card cursor-pointer">
                   <div className="grid grid-cols-1 lg:grid-cols-2">
                     <div className="relative h-80 lg:h-[500px]">
-                      {getImageUrl(featuredArticle.image) && (
+                      {featuredArticle.image && (
                         <Image
-                          src={getImageUrl(featuredArticle.image)}
+                          src={featuredArticle.image}
                           alt={featuredArticle.title}
                           fill
                           className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -174,29 +163,21 @@ export function MagazineClient({ articles, articleCategories }: Props) {
                       <h2 className="text-2xl md:text-3xl lg:text-4xl font-serif text-foreground mb-4 leading-tight group-hover:text-accent transition-colors">
                         {featuredArticle.title}
                       </h2>
-                      <p className="text-muted-foreground mb-6 leading-relaxed">
-                        {featuredArticle.excerpt}
-                      </p>
+                      <p className="text-muted-foreground mb-6 leading-relaxed">{featuredArticle.excerpt}</p>
                       <div className="flex items-center gap-4">
-                        {getImageUrl(featuredArticle.authorImage) && (
-                          <Image
-                            src={getImageUrl(featuredArticle.authorImage)}
-                            alt={featuredArticle.author}
-                            width={40}
-                            height={40}
-                            className="rounded-full"
-                          />
+                        {featuredArticle.authorImage && (
+                          <Image src={featuredArticle.authorImage} alt={featuredArticle.author ?? ""} width={40} height={40} className="rounded-full" />
                         )}
                         <div>
-                          <p className="text-sm text-foreground">
-                            {featuredArticle.author}
-                          </p>
+                          <p className="text-sm text-foreground">{featuredArticle.author}</p>
                           <div className="flex items-center gap-3 text-xs text-muted-foreground">
                             <span>{formatDate(featuredArticle.date)}</span>
-                            <span className="flex items-center gap-1">
-                              <Clock className="w-3 h-3" />
-                              {featuredArticle.readTime}
-                            </span>
+                            {featuredArticle.readTime && (
+                              <span className="flex items-center gap-1">
+                                <Clock className="w-3 h-3" />
+                                {featuredArticle.readTime}
+                              </span>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -220,13 +201,13 @@ export function MagazineClient({ articles, articleCategories }: Props) {
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
           >
             {otherArticles.map((article) => (
-              <motion.div key={article.documentId} variants={itemVariants}>
+              <motion.div key={article.id} variants={itemVariants}>
                 <Link href={`/magazine/${article.slug}`}>
                   <article className="group h-full flex flex-col overflow-hidden rounded-xl bg-card cursor-pointer">
                     <div className="relative h-56 overflow-hidden">
-                      {getImageUrl(article.image) && (
+                      {article.image && (
                         <Image
-                          src={getImageUrl(article.image)}
+                          src={article.image}
                           alt={article.title}
                           fill
                           className="object-cover transition-transform duration-500 group-hover:scale-110"
@@ -241,34 +222,24 @@ export function MagazineClient({ articles, articleCategories }: Props) {
                       </motion.div>
                     </div>
                     <div className="flex-1 p-6 flex flex-col">
-                      <span className="text-xs tracking-wider uppercase text-accent mb-3">
-                        {article.category}
-                      </span>
+                      <span className="text-xs tracking-wider uppercase text-accent mb-3">{article.category}</span>
                       <h3 className="text-xl font-serif text-foreground mb-3 group-hover:text-accent transition-colors leading-tight">
                         {article.title}
                       </h3>
-                      <p className="text-sm text-muted-foreground mb-4 flex-1 line-clamp-2">
-                        {article.excerpt}
-                      </p>
+                      <p className="text-sm text-muted-foreground mb-4 flex-1 line-clamp-2">{article.excerpt}</p>
                       <div className="flex items-center gap-3 pt-4 border-t border-border">
-                        {getImageUrl(article.authorImage) && (
-                          <Image
-                            src={getImageUrl(article.authorImage)}
-                            alt={article.author}
-                            width={32}
-                            height={32}
-                            className="rounded-full"
-                          />
+                        {article.authorImage && (
+                          <Image src={article.authorImage} alt={article.author ?? ""} width={32} height={32} className="rounded-full" />
                         )}
                         <div className="flex-1">
-                          <p className="text-xs text-foreground">
-                            {article.author}
-                          </p>
+                          <p className="text-xs text-foreground">{article.author}</p>
                         </div>
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <Clock className="w-3 h-3" />
-                          {article.readTime}
-                        </div>
+                        {article.readTime && (
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <Clock className="w-3 h-3" />
+                            {article.readTime}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </article>
@@ -278,14 +249,8 @@ export function MagazineClient({ articles, articleCategories }: Props) {
           </motion.div>
 
           {filteredArticles.length === 0 && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center py-16"
-            >
-              <p className="text-muted-foreground">
-                No articles found matching your criteria.
-              </p>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-16">
+              <p className="text-muted-foreground">No articles found matching your criteria.</p>
             </motion.div>
           )}
         </div>

@@ -90,6 +90,12 @@
   }
 }
 
+@layer components {
+  .input-field {
+    @apply w-full px-3 py-2.5 bg-background border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-accent transition-colors;
+  }
+}
+
 /* Custom scrollbar for luxury feel */
 ::-webkit-scrollbar {
   width: 8px;

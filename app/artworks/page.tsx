@@ -1,6 +1,6 @@
 export const dynamic = "force-dynamic";
 
-import { getArtworks } from "@/lib/strapi";
+import { getArtworks } from "@/lib/db";
 import { categories } from "@/lib/data";
 import { ArtworksClient } from "./artworks-client";
 

@@ -5,25 +5,38 @@ import { ArrowLeft, Clock, Share2, Bookmark, Twitter, Facebook, Linkedin } from 
 import Image from "next/image";
 import Link from "next/link";
 import { format } from "date-fns";
-import { BlocksRenderer, type BlocksContent } from "@strapi/blocks-react-renderer";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { WhatsAppButton } from "@/components/whatsapp-button";
-import { type StrapiArticle, getImageUrl } from "@/lib/strapi";
 
-function formatDate(date: string | null | undefined): string {
+type Article = {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  content: string | null;
+  category: string;
+  readTime: string | null;
+  date: Date | string;
+  image: string | null;
+  author: string | null;
+  authorImage: string | null;
+  featured: boolean;
+};
+
+type Props = {
+  article: Article;
+  relatedArticles: Article[];
+};
+
+function formatDate(date: Date | string | null | undefined): string {
   if (!date) return "";
   try {
     return format(new Date(date), "MMM d, yyyy");
   } catch {
-    return date;
+    return String(date);
   }
 }
-
-type Props = {
-  article: StrapiArticle;
-  relatedArticles: StrapiArticle[];
-};
 
 export function ArticleDetail({ article, relatedArticles }: Props) {
   return (
@@ -61,28 +74,22 @@ export function ArticleDetail({ article, relatedArticles }: Props) {
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-serif mb-6 leading-tight text-balance">
               {article.title}
             </h1>
-            <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-              {article.excerpt}
-            </p>
+            <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">{article.excerpt}</p>
             <div className="flex items-center justify-center gap-6">
               <div className="flex items-center gap-3">
-                {getImageUrl(article.authorImage) && (
-                  <Image
-                    src={getImageUrl(article.authorImage)}
-                    alt={article.author}
-                    width={48}
-                    height={48}
-                    className="rounded-full"
-                  />
+                {article.authorImage && (
+                  <Image src={article.authorImage} alt={article.author ?? ""} width={48} height={48} className="rounded-full" />
                 )}
                 <div className="text-left">
                   <p className="text-foreground font-medium">{article.author}</p>
                   <div className="flex items-center gap-3 text-sm text-muted-foreground">
                     <span>{formatDate(article.date)}</span>
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-3 h-3" />
-                      {article.readTime}
-                    </span>
+                    {article.readTime && (
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        {article.readTime}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -90,20 +97,14 @@ export function ArticleDetail({ article, relatedArticles }: Props) {
           </motion.header>
 
           {/* Featured Image */}
-          {getImageUrl(article.image) && (
+          {article.image && (
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               className="relative aspect-video rounded-xl overflow-hidden mb-12"
             >
-              <Image
-                src={getImageUrl(article.image)}
-                alt={article.title}
-                fill
-                className="object-cover"
-                priority
-              />
+              <Image src={article.image} alt={article.title} fill className="object-cover" priority />
             </motion.div>
           )}
 
@@ -114,8 +115,8 @@ export function ArticleDetail({ article, relatedArticles }: Props) {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="prose prose-invert prose-lg max-w-none mb-12 text-muted-foreground leading-relaxed"
           >
-            {article.content && article.content.length > 0 && (
-              <BlocksRenderer content={article.content as BlocksContent} />
+            {article.content && (
+              <div className="whitespace-pre-wrap">{article.content}</div>
             )}
           </motion.div>
 
@@ -158,26 +159,15 @@ export function ArticleDetail({ article, relatedArticles }: Props) {
             transition={{ delay: 0.5 }}
             className="flex flex-col sm:flex-row items-center gap-6 p-8 bg-card rounded-xl mb-12"
           >
-            {getImageUrl(article.authorImage) && (
-              <Image
-                src={getImageUrl(article.authorImage)}
-                alt={article.author}
-                width={80}
-                height={80}
-                className="rounded-full"
-              />
+            {article.authorImage && (
+              <Image src={article.authorImage} alt={article.author ?? ""} width={80} height={80} className="rounded-full" />
             )}
             <div className="text-center sm:text-left">
-              <p className="text-xs tracking-wider uppercase text-muted-foreground mb-1">
-                Written by
-              </p>
-              <h3 className="text-xl font-serif text-foreground mb-2">
-                {article.author}
-              </h3>
+              <p className="text-xs tracking-wider uppercase text-muted-foreground mb-1">Written by</p>
+              <h3 className="text-xl font-serif text-foreground mb-2">{article.author}</h3>
               <p className="text-sm text-muted-foreground">
-                Art critic and cultural commentator based in New York. Contributing
-                editor at ARTVAULT with a focus on contemporary art movements and
-                emerging artists.
+                Art critic and cultural commentator based in New York. Contributing editor at ARTVAULT
+                with a focus on contemporary art movements and emerging artists.
               </p>
             </div>
           </motion.div>
@@ -200,7 +190,7 @@ export function ArticleDetail({ article, relatedArticles }: Props) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {relatedArticles.map((related, index) => (
                 <motion.div
-                  key={related.documentId}
+                  key={related.id}
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
@@ -209,9 +199,9 @@ export function ArticleDetail({ article, relatedArticles }: Props) {
                   <Link href={`/magazine/${related.slug}`}>
                     <article className="group flex flex-col overflow-hidden rounded-xl bg-card cursor-pointer h-full">
                       <div className="relative h-48 overflow-hidden">
-                        {getImageUrl(related.image) && (
+                        {related.image && (
                           <Image
-                            src={getImageUrl(related.image)}
+                            src={related.image}
                             alt={related.title}
                             fill
                             className="object-cover transition-transform duration-500 group-hover:scale-110"
@@ -219,9 +209,7 @@ export function ArticleDetail({ article, relatedArticles }: Props) {
                         )}
                       </div>
                       <div className="p-6 flex-1 flex flex-col">
-                        <span className="text-xs tracking-wider uppercase text-accent mb-2">
-                          {related.category}
-                        </span>
+                        <span className="text-xs tracking-wider uppercase text-accent mb-2">{related.category}</span>
                         <h3 className="text-lg font-serif text-foreground mb-2 group-hover:text-accent transition-colors">
                           {related.title}
                         </h3>

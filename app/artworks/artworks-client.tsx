@@ -8,27 +8,29 @@ import Link from "next/link";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { WhatsAppButton } from "@/components/whatsapp-button";
-import { type StrapiArtwork, getImageUrl } from "@/lib/strapi";
+
+type Artwork = {
+  id: string;
+  title: string;
+  artist: string;
+  price: string;
+  category: string;
+  image: string | null;
+  availability: string;
+};
 
 const containerVariants = {
   hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.08 },
-  },
+  visible: { opacity: 1, transition: { staggerChildren: 0.08 } },
 };
 
 const itemVariants = {
   hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, ease: "easeOut" as const },
-  },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } },
 };
 
 type Props = {
-  artworks: StrapiArtwork[];
+  artworks: Artwork[];
   categories: string[];
 };
 
@@ -160,13 +162,13 @@ export function ArtworksClient({ artworks, categories }: Props) {
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
           >
             {filteredArtworks.map((artwork) => (
-              <motion.div key={artwork.documentId} variants={itemVariants}>
-                <Link href={`/artworks/${artwork.documentId}`}>
+              <motion.div key={artwork.id} variants={itemVariants}>
+                <Link href={`/artworks/${artwork.id}`}>
                   <div className="group relative overflow-hidden rounded-lg bg-card cursor-pointer">
                     <div className="relative aspect-[4/5] overflow-hidden">
-                      {getImageUrl(artwork.image) && (
+                      {artwork.image && (
                         <Image
-                          src={getImageUrl(artwork.image)}
+                          src={artwork.image}
                           alt={artwork.title}
                           fill
                           className="object-cover transition-transform duration-700 group-hover:scale-110"
@@ -178,14 +180,14 @@ export function ArtworksClient({ artworks, categories }: Props) {
                       {/* Availability Badge */}
                       <div
                         className={`absolute top-4 right-4 px-3 py-1 text-xs tracking-wider uppercase rounded-full ${
-                          artwork.availabiliy === "Available"
+                          artwork.availability === "Available"
                             ? "bg-accent/20 text-accent border border-accent/30"
-                            : artwork.availabiliy === "Reserved"
+                            : artwork.availability === "On Hold"
                             ? "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"
                             : "bg-red-500/20 text-red-400 border border-red-500/30"
                         }`}
                       >
-                        {artwork.availabiliy}
+                        {artwork.availability}
                       </div>
 
                       {/* Glow Border */}

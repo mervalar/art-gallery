@@ -1,6 +1,6 @@
 export const dynamic = "force-dynamic";
 
-import { getArticleBySlug, getArticles } from "@/lib/strapi";
+import { getArticleBySlug, getArticles } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { ArticleDetail } from "./article-detail";
 
@@ -18,9 +18,7 @@ export default async function ArticleDetailPage({
   if (!article) notFound();
 
   const relatedArticles = allArticles
-    .filter(
-      (a) => a.category === article.category && a.slug !== article.slug
-    )
+    .filter((a: { category: string; slug: string }) => a.category === article.category && a.slug !== article.slug)
     .slice(0, 2);
 
   return <ArticleDetail article={article} relatedArticles={relatedArticles} />;

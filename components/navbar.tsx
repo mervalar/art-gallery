@@ -3,13 +3,13 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { Menu, X } from "lucide-react";
 
 const navLinks = [
   { name: "Home", href: "/" },
   { name: "Gallery", href: "/artworks" },
   { name: "Magazine", href: "/magazine" },
-  { name: "Artists", href: "/#artists" },
   { name: "About", href: "/#about" },
   { name: "Contact", href: "/contact" },
 ];
@@ -42,11 +42,16 @@ export function Navbar() {
         <Link href="/" className="relative z-10">
           <motion.div
             whileHover={{ scale: 1.02 }}
-            className="flex items-center gap-2"
+            className="flex items-center"
           >
-            <span className="text-2xl font-serif tracking-wider text-foreground">
-              ART<span className="text-accent">VAULT</span>
-            </span>
+            <Image
+              src="/logo.jpeg"
+              alt="House of Frame Art Gallery"
+              width={120}
+              height={40}
+              className="object-contain invert"
+              priority
+            />
           </motion.div>
         </Link>
 

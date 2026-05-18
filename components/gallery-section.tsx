@@ -1,4 +1,4 @@
-import { getArtworks } from "@/lib/strapi";
+import { getArtworks } from "@/lib/db";
 import { GallerySectionClient } from "./gallery-section-client";
 
 export async function GallerySection() {

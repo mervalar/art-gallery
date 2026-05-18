@@ -7,11 +7,24 @@ import Link from "next/link";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { WhatsAppButton } from "@/components/whatsapp-button";
-import { type StrapiArtwork, getImageUrl } from "@/lib/strapi";
+
+type Artwork = {
+  id: string;
+  title: string;
+  artist: string;
+  price: string;
+  category: string;
+  image: string | null;
+  description: string | null;
+  year: string | null;
+  medium: string | null;
+  dimensions: string | null;
+  availability: string;
+};
 
 type Props = {
-  artwork: StrapiArtwork;
-  relatedArtworks: StrapiArtwork[];
+  artwork: Artwork;
+  relatedArtworks: Artwork[];
 };
 
 export function ArtworkDetail({ artwork, relatedArtworks }: Props) {
@@ -49,9 +62,9 @@ export function ArtworkDetail({ artwork, relatedArtworks }: Props) {
               className="relative"
             >
               <div className="relative aspect-[4/5] rounded-xl overflow-hidden bg-card">
-                {getImageUrl(artwork.image) && (
+                {artwork.image && (
                   <Image
-                    src={getImageUrl(artwork.image)}
+                    src={artwork.image}
                     alt={artwork.title}
                     fill
                     className="object-cover"
@@ -64,7 +77,7 @@ export function ArtworkDetail({ artwork, relatedArtworks }: Props) {
                 className={`absolute top-6 left-6 px-4 py-2 text-xs tracking-wider uppercase rounded-full backdrop-blur-sm ${
                   artwork.availability === "Available"
                     ? "bg-accent/20 text-accent border border-accent/30"
-                    : artwork.availability === "Reserved"
+                    : artwork.availability === "On Hold"
                     ? "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"
                     : "bg-red-500/20 text-red-400 border border-red-500/30"
                 }`}
@@ -97,30 +110,20 @@ export function ArtworkDetail({ artwork, relatedArtworks }: Props) {
               {/* Artwork Info */}
               <div className="grid grid-cols-2 gap-6 mb-8 p-6 bg-card rounded-xl">
                 <div>
-                  <span className="text-xs tracking-wider uppercase text-muted-foreground block mb-1">
-                    Year
-                  </span>
-                  <span className="text-foreground">{artwork.year}</span>
+                  <span className="text-xs tracking-wider uppercase text-muted-foreground block mb-1">Year</span>
+                  <span className="text-foreground">{artwork.year ?? "—"}</span>
                 </div>
                 <div>
-                  <span className="text-xs tracking-wider uppercase text-muted-foreground block mb-1">
-                    Medium
-                  </span>
-                  <span className="text-foreground">{artwork.medium}</span>
+                  <span className="text-xs tracking-wider uppercase text-muted-foreground block mb-1">Medium</span>
+                  <span className="text-foreground">{artwork.medium ?? "—"}</span>
                 </div>
                 <div>
-                  <span className="text-xs tracking-wider uppercase text-muted-foreground block mb-1">
-                    Dimensions
-                  </span>
-                  <span className="text-foreground">{artwork.dimensions}</span>
+                  <span className="text-xs tracking-wider uppercase text-muted-foreground block mb-1">Dimensions</span>
+                  <span className="text-foreground">{artwork.dimensions ?? "—"}</span>
                 </div>
                 <div>
-                  <span className="text-xs tracking-wider uppercase text-muted-foreground block mb-1">
-                    Price
-                  </span>
-                  <span className="text-xl font-serif text-accent">
-                    {artwork.price}
-                  </span>
+                  <span className="text-xs tracking-wider uppercase text-muted-foreground block mb-1">Price</span>
+                  <span className="text-xl font-serif text-accent">{artwork.price}</span>
                 </div>
               </div>
 
@@ -153,26 +156,24 @@ export function ArtworkDetail({ artwork, relatedArtworks }: Props) {
               viewport={{ once: true }}
               className="mb-10"
             >
-              <h2 className="text-2xl md:text-3xl font-serif">
-                Related Artworks
-              </h2>
+              <h2 className="text-2xl md:text-3xl font-serif">Related Artworks</h2>
             </motion.div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {relatedArtworks.map((related, index) => (
                 <motion.div
-                  key={related.documentId}
+                  key={related.id}
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
                 >
-                  <Link href={`/artworks/${related.documentId}`}>
+                  <Link href={`/artworks/${related.id}`}>
                     <div className="group relative overflow-hidden rounded-lg bg-card cursor-pointer">
                       <div className="relative aspect-[4/5] overflow-hidden">
-                        {getImageUrl(related.image) && (
+                        {related.image && (
                           <Image
-                            src={getImageUrl(related.image)}
+                            src={related.image}
                             alt={related.title}
                             fill
                             className="object-cover transition-transform duration-700 group-hover:scale-110"
@@ -184,12 +185,8 @@ export function ArtworkDetail({ artwork, relatedArtworks }: Props) {
                         <h3 className="text-lg font-serif text-foreground mb-1 group-hover:text-accent transition-colors">
                           {related.title}
                         </h3>
-                        <p className="text-sm text-muted-foreground mb-2">
-                          by {related.artist}
-                        </p>
-                        <span className="text-base font-medium text-foreground">
-                          {related.price}
-                        </span>
+                        <p className="text-sm text-muted-foreground mb-2">by {related.artist}</p>
+                        <span className="text-base font-medium text-foreground">{related.price}</span>
                       </div>
                     </div>
                   </Link>

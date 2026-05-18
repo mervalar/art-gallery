@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Instagram, Twitter, Facebook, Linkedin, ArrowUpRight } from "lucide-react";
+import { Instagram, X, Facebook, Linkedin, ArrowUpRight, Mail, Phone, MapPin } from "lucide-react";
 
 const footerLinks = {
   gallery: [
@@ -33,7 +33,7 @@ const footerLinks = {
 
 const socialLinks = [
   { name: "Instagram", icon: Instagram, href: "#" },
-  { name: "Twitter", icon: Twitter, href: "#" },
+  { name: "X", icon: X, href: "#" },
   { name: "Facebook", icon: Facebook, href: "#" },
   { name: "LinkedIn", icon: Linkedin, href: "#" },
 ];
@@ -47,15 +47,36 @@ export function Footer() {
           {/* Brand Column */}
           <div className="lg:col-span-4">
             <Link href="/" className="inline-block mb-6">
-              <span className="text-2xl font-serif tracking-wider text-foreground">
-                ART<span className="text-accent">VAULT</span>
+              <span className="text-xl font-serif tracking-[0.15em] uppercase text-foreground leading-none">
+                House <span className="text-accent text-xs tracking-[0.3em]">of</span> Frame
               </span>
             </Link>
             <p className="text-muted-foreground text-sm leading-relaxed max-w-sm mb-8">
-              A premier destination for contemporary art, bridging emerging talent
-              and discerning collectors worldwide since 2010.
+              A refined space dedicated to the celebration of art, creativity and visual storytelling — founded in 2024 by RUZINDANA JULES.
             </p>
             
+            {/* Contact Info */}
+            <div className="space-y-3 mb-8">
+              <a
+                href="mailto:Houseofframe026@gmail.com"
+                className="flex items-center gap-3 text-sm text-muted-foreground hover:text-foreground transition-colors duration-300"
+              >
+                <Mail className="w-4 h-4 text-accent shrink-0" />
+                Houseofframe026@gmail.com
+              </a>
+              <a
+                href="tel:+250787620213"
+                className="flex items-center gap-3 text-sm text-muted-foreground hover:text-foreground transition-colors duration-300"
+              >
+                <Phone className="w-4 h-4 text-accent shrink-0" />
+                +250 787 620 213
+              </a>
+              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                <MapPin className="w-4 h-4 text-accent shrink-0" />
+                Kigali, Rwanda
+              </div>
+            </div>
+
             {/* Social Links */}
             <div className="flex gap-4">
               {socialLinks.map((social) => (
@@ -162,7 +183,7 @@ export function Footer() {
       <div className="container mx-auto px-6 lg:px-12 py-6">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} ARTVAULT. All rights reserved.
+            © {new Date().getFullYear()} House of Frame Art Gallery. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
             <Link
